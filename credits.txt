@@ -1,0 +1,3 @@
+Gamer's Control by vawerv
+shortcut.js by Binny V A
+keycode.js by Johnathan Tang

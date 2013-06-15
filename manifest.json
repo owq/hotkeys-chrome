@@ -1,0 +1,22 @@
+{
+"update_url":"http://clients2.google.com/service/update2/crx",
+  "name": "Hotkeys",
+  "version": "0.12",
+  "description": "Customisable hotkeys for basic browser actions.",
+  "icons": {"128":"icon.png"},
+  "page_action" :
+  {
+    "default_icon" : "icon-19.png",
+    "default_title" : "Hotkeys"
+  },
+  "background_page": "background.html",
+  "options_page": "options.html",
+  "content_scripts": [ {
+    "js": [ "shortcut.js", "control.js" ],
+    "run_at": "document_start",
+    "matches": [ "http://*/*", "https://*/*" ]
+  } ],
+  "permissions": [
+    "tabs"
+  ]
+}

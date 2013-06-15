@@ -1,0 +1,301 @@
+<html>
+  <head>
+    <title>
+      Customize Hotkeys
+    </title>
+    <link type="text/css" href="css/flick/jquery-ui-1.8.2.custom.css" rel="stylesheet">
+    <script type="text/javascript" src="js/jquery-1.4.2.min.js">
+</script>
+    <script type="text/javascript" src="js/jquery-ui-1.8.2.custom.min.js">
+</script>
+    <script type="text/javascript" src="var_defaultHotkeys.js">
+</script>
+    <script type="text/javascript" src="keycode.js">
+</script>
+    <script type="text/javascript">
+
+    // Saves options to localStorage.
+    function save_options() {
+
+    //hotkeys data structure
+    function hotkey() {
+        this.value = "";
+        this.enabled = false;
+    }
+    var hotkeys = new Object();
+
+    //fill data structure
+    var node_list = document.getElementsByTagName('input');
+
+    for (var i = 0; i < node_list.length; i++) {
+    var node = node_list[i];
+
+    //check for duplicates
+    for(var j = i+1; j < node_list.length; j++) {
+        var className = node.getAttribute('class');
+        var className2 = node_list[j].getAttribute('class');
+        if(node.value == node_list[j].value && node.getAttribute('type') == 'text' && (document.getElementById(className+"Enabled").checked && document.getElementById(className2+"Enabled").checked)) {
+                setStatus("Duplicates: <strong>"+node.getAttribute('class')+"<\/strong> and <strong>"+node_list[j].getAttribute('class')+"<\/strong>! Try again!", 10000);
+                return;
+        }
+    }
+
+    if (node.getAttribute('type') == 'text') {
+        var className = node.getAttribute('class');
+        hotkeys[className] = new hotkey();
+        hotkeys[className].value = node.value;
+        hotkeys[className].enabled = document.getElementById(className+"Enabled").checked;
+    }
+    } 
+
+    //save data
+    localStorage["hotkeys"] = JSON.stringify(hotkeys);
+    localStorage["blocklist"] = document.getElementById("blocklist").value;
+
+    //send new data over to background.html
+    var port = chrome.extension.connect();
+    port.postMessage({action: "reloadSettings", data: hotkeys});
+
+    // Update status to let user know options were saved.
+    setStatus("Options Saved.", 1500);
+
+    }
+
+    function setStatus(text, timeout) {
+        var status = document.getElementById("status");
+        status.innerHTML = text;
+        setTimeout(function() { status.innerHTML = ""; }, timeout);
+        }
+
+    // Restores data
+    function restore_options(arg) {
+
+    //retrieve data from storage
+    if(localStorage["hotkeys"]) {
+     var hotkeys = JSON.parse(localStorage["hotkeys"]);
+    } else {
+     arg = "defaults";
+    }
+    if(localStorage["blocklist"]) { document.getElementById("blocklist").value = localStorage["blocklist"]; }
+
+    var node_list = document.getElementsByTagName('input');
+
+    for (var i = 0; i < node_list.length; i++) {
+      var node = node_list[i];
+
+      if (node.getAttribute('type') == 'text') {
+        var className = node.getAttribute('class');
+        if(arg != "defaults") {
+                //this assumes that both values are either filled, or undefined.
+                node.value = hotkeys[className].value;
+                document.getElementById(className+"Enabled").checked = hotkeys[className].enabled;
+        } else {
+                node.value = defaultHotkeys[className];
+                document.getElementById(className+"Enabled").checked = true;
+        }
+        
+      }
+    } 
+
+    //refreshes all checkboxes
+    $(function(){
+                $("input:checkbox").button("refresh");
+    });
+
+    }
+        
+
+    </script>
+    <style type="text/css">
+#tabs {
+    max-width:500px;
+    }
+    body{ font: 75% sans-serif; margin: 30px;}
+    #defaults { margin-left: 20px; }
+    .rows{ padding:2px; }
+    .rows input{ height:28px;}
+    #status{height:20px;}
+    .actions2{margin-top:15px;}
+    </style>
+  </head>
+  <body onload="restore_options()">
+    <div id="tabs">
+      <ul>
+        <li>
+          <a href="#tabs-1">Hotkeys</a>
+        </li>
+        <li>
+          <a href="#tabs-2">Blocklist</a>
+        </li>
+      </ul>
+      <div id="tabs-1">
+        <div id="help">
+          <p>
+            To change the hotkeys, click on the textbox and press your desired
+            hotkey combination. To enable/disable a hotkey, click on any button
+            on the right.
+          </p>
+          <p>
+            Some shortcut combinations may not work properly. The defaults are
+            recommended. Also, it is best to restart the browser after changing
+            the options.
+          </p>
+        </div>
+        <div class="rows">
+          <input type="text" class="scrollUp"> <input type="checkbox" class=
+          "scrollUp" id="scrollUpEnabled"><label for="scrollUpEnabled">Scroll
+          Up</label>
+        </div>
+        <div class="rows">
+          <input type="text" class="scrollDown"> <input type="checkbox" class=
+          "scrollDown" id="scrollDownEnabled"><label for=
+          "scrollDownEnabled">Scroll Down</label>
+        </div>
+        <div class="rows">
+          <input type="text" class="previousTab"> <input type="checkbox" class=
+          "previousTab" id="previousTabEnabled"><label for=
+          "previousTabEnabled">Previous Tab</label>
+        </div>
+        <div class="rows">
+          <input type="text" class="nextTab"> <input type="checkbox" class=
+          "nextTab" id="nextTabEnabled"><label for="nextTabEnabled">Next
+          Tab</label>
+        </div>
+        <div class="rows">
+          <input type="text" class="scrollToTop"> <input type="checkbox" class=
+          "scrollToTop" id="scrollToTopEnabled"><label for=
+          "scrollToTopEnabled">Scroll to Top</label>
+        </div>
+        <div class="rows">
+          <input type="text" class="scrollToBottom"> <input type="checkbox"
+          class="scrollToBottom" id="scrollToBottomEnabled"><label for=
+          "scrollToBottomEnabled">Scroll to Bottom</label>
+        </div>
+        <div class="rows">
+          <input type="text" class="historyBack"> <input type="checkbox" class=
+          "historyBack" id="historyBackEnabled"><label for=
+          "historyBackEnabled">History Back</label>
+        </div>
+        <div class="rows">
+          <input type="text" class="historyForward"> <input type="checkbox"
+          class="historyForward" id="historyForwardEnabled"><label for=
+          "historyForwardEnabled">History Forward</label>
+        </div>
+        <div class="rows">
+          <input type="text" class="reload"> <input type="checkbox" class=
+          "reload" id="reloadEnabled"><label for="reloadEnabled">Reload
+          Page</label>
+        </div>
+        <div class="rows">
+          <input type="text" class="stopLoading"> <input type="checkbox" class=
+          "stopLoading" id="stopLoadingEnabled"><label for=
+          "stopLoadingEnabled">Stop Loading</label>
+        </div>
+        <div class="rows">
+          <input type="text" class="newTab"> <input type="checkbox" class=
+          "newTab" id="newTabEnabled"><label for="newTabEnabled">New
+          Tab</label>
+        </div>
+        <div class="rows">
+          <input type="text" class="closeTab"> <input type="checkbox" class=
+          "closeTab" id="closeTabEnabled"><label for="closeTabEnabled">Close
+          Tab</label>
+        </div>
+        <div class="rows">
+          <input type="text" class="undoCloseTab"> <input type="checkbox"
+          class="undoCloseTab" id="undoCloseTabEnabled"><label for=
+          "undoCloseTabEnabled">Undo Close Tab</label>
+        </div><br>
+        <div class="actions">
+          <div id="status"></div><button onclick="save_options()" class=
+          "ui-corner-all">Save</button> <button onclick="window.close()" class=
+          "ui-corner-all">Cancel</button> <button onclick=
+          "restore_options('defaults')" id="defaults" class=
+          "ui-corner-all">Defaults</button>
+        </div>
+      </div>
+      <div id="tabs-2">
+        <div>
+          <p>
+            For advanced users only. This might be made more user friendly in
+            the future. To use, separate regular expressions with commas.
+          </p>
+        </div>
+        <textarea id="blocklist" style="width: 100%; height: 300px">
+</textarea>
+        <div class="actions2">
+          <button onclick="save_options()" class="ui-corner-all">Save</button>
+          <button onclick="window.close()" class=
+          "ui-corner-all">Cancel</button> <button onclick=
+          "restore_options('defaults')" id="defaults" class=
+          "ui-corner-all">Defaults</button>
+        </div>
+      </div>
+    </div><script type="text/javascript">
+
+
+    var node_list = document.getElementsByTagName('input');
+
+    for (var i = 0; i < node_list.length; i++) {
+    var node = node_list[i];
+
+    if (node.getAttribute('type') == 'text') {
+        // show keypress in textbox
+        node.onkeydown = function(e) {
+                e = e || window.event
+                var k = KeyCode;
+                this.value = k.hot_key(k.translate_event(e));
+                KeyCode.key_down(e);
+                if(e.preventDefault) {
+                    e.preventDefault();
+                }
+                return false;
+        };
+    }
+    } 
+
+    </script><script type="text/javascript">
+
+        //User interface
+        $(function(){
+        
+                $('#tabs').tabs();
+                        
+                $("button, input:checkbox").button();
+                $(".actions button:first").button({
+                        icons: {
+                        primary: 'ui-icon-check'
+                        }
+                }).next().button({
+                        icons: {
+                        primary: 'ui-icon-closethick'
+                        }
+                }).next().button({
+                        icons: {
+                        primary: 'ui-icon-gear'
+                        }
+                });
+                
+                $(".actions").buttonset();
+                
+                $(".actions2 button:first").button({
+                        icons: {
+                        primary: 'ui-icon-check'
+                        }
+                }).next().button({
+                        icons: {
+                        primary: 'ui-icon-closethick'
+                        }
+                }).next().button({
+                        icons: {
+                        primary: 'ui-icon-gear'
+                        }
+                });
+                
+                $(".actions2").buttonset();
+
+                                
+        });
+    </script>
+  </body>
+</html>
