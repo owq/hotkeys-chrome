@@ -10,18 +10,18 @@
     <script type="text/javascript" src="keycode.js"></script>
     <script type="text/javascript" src="options_uihelper.js"></script>
     <style type="text/css">
-#tabs {
-    max-width:500px;
+	#tabs {
+		max-width:500px;
     }
     body{ font: 75% sans-serif; margin: 30px;}
-    #defaults { margin-left: 20px; }
     .rows{ padding:2px; }
     .rows input{ height:28px;}
     #status{height:20px;}
     .actions2{margin-top:15px;}
     .warning{color:red; font-weight: bold}
-    
-</style>
+	.status { display:none;}
+	.defaultsButton { margin-left: 20px; }
+	</style>
   </head>
   <body>
     <div id="tabs">
@@ -39,7 +39,7 @@
           click on any button on the right.</p>
           <p>
           <span class="warning">Warning: Some shortcut combinations may not work properly.</span> The defaults are recommended.
-          Also, it is best to restart the browser after changing the options.</p>
+          <span class="warning">Also, it is best to restart the browser after changing the options</span>, since the extension will not take effect until the page is reloaded.</p>
 		  <p> Note: hotkeys are disabled while on input fields.</p>
         </div>
         <div class="rows">
@@ -96,9 +96,9 @@
         <label for="undoCloseTabEnabled">Undo Close Tab</label></div>
         <br />
         <div class="actions">
-        <div id="status"></div>
-        <button id="saveButton" class="ui-corner-all">Save</button>
-        <button id="defaults" class="ui-corner-all">Defaults</button></div>
+        <button class="saveButton ui-corner-all">Save</button>
+        <button class="defaultsButton ui-corner-all" style="margin-left:20px;">Defaults</button></div>
+		<div class="status"></div>
       </div>
       <div id="tabs-2">
         <div>
@@ -107,8 +107,9 @@
         </div>
         <textarea id="blocklist" style="width: 100%; height: 300px"></textarea>
         <div class="actions2">
-        <button id="saveButton" class="ui-corner-all">Save</button>
-        <button id="defaults" class="ui-corner-all">Defaults</button>
+        <button class="ui-corner-all saveButton">Save</button>
+        <button class="ui-corner-all defaultsButton" style="margin-left:20px;">Defaults</button>
+		<div class="status"></div>
 		</div>
       </div>
     </div>

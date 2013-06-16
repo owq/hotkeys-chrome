@@ -56,6 +56,6 @@ $(function () {
 }
 );
 
-//Add listeners
-document.getElementById("saveButton").addEventListener('click', save_options);
-document.getElementById("defaults").addEventListener('click', restore_options);
+//Add listeners (JQuery)
+$(".saveButton").on('click', save_options);
+$(".defaultsButton").on('click', function(){restore_options(true)});

@@ -60,7 +60,7 @@ chrome.pageAction.onClicked.addListener(function (tab) {
 }
 );
 var closed_tabs = [];
-var now_tab;
+var now_tab = false;
 chrome.tabs.getSelected(null, function (tab) {
     now_tab = tab;
 }
@@ -96,7 +96,7 @@ function reloadTab(tabid, o, n) {
 }
 chrome.extension.onConnect.addListener(function (port, name) {
     port.onMessage.addListener(function (msg) {
-        var tab = port.tab;
+        var tab = port.sender.tab;
         switch (msg.action) {
             case "reloadSettings":
                 //warning: before we add new hotkeys, have to remove original hotkeys first.

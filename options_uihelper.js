@@ -39,15 +39,17 @@ function save_options() {
     setStatus("Options Saved.", 1500);
 }
 function setStatus(text, timeout) {
-    var status = document.getElementById("status");
-    status.innerHTML = text;
-    setTimeout(function () {
-        status.innerHTML = "";
-    }
-    , timeout);
+    var statuses = $(".status");
+	var anim = 200;
+	statuses.html(text);
+	statuses.fadeIn(anim).delay(timeout).fadeOut(anim);
 }
 // Restores data
-function restore_options() {
+function restore_options(useDefaults) {
+	useDefaults = useDefaults || !localStorage["hotkeys"];
+	if (!useDefaults) {
+		var hotkeys = JSON.parse(localStorage["hotkeys"]);
+	}
     if (localStorage["blocklist"]) {
         document.getElementById("blocklist").value = localStorage["blocklist"];
     }
@@ -56,8 +58,13 @@ function restore_options() {
         var node = node_list[i];
         if (node.getAttribute('type') == 'text') {
             var className = node.getAttribute('class');
-			node.value = defaultHotkeys[className];
-			document.getElementById(className + "Enabled").checked = true;
+			if(useDefaults) {
+				node.value = defaultHotkeys[className];
+				document.getElementById(className + "Enabled").checked = true;
+			} else {
+				node.value = hotkeys[className].value;
+				document.getElementById(className + "Enabled").checked = hotkeys[className].enabled;
+			}
         }
     }
     //refreshes all checkboxes
@@ -68,4 +75,4 @@ function restore_options() {
 }
 
 //add event listener
-window.addEventListener('load', restore_options)
+window.addEventListener('load', function(){restore_options(false);})
