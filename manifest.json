@@ -1,7 +1,7 @@
 {
 	"update_url":"http://clients2.google.com/service/update2/crx",
 	"name": "Hotkeys",
-	"version": "0.14",
+	"version": "0.15",
 	"description": "Customisable hotkeys for basic browser actions.",
 	"icons": {"128":"icon.png"},
 	"page_action" :
