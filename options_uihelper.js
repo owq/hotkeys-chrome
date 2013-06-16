@@ -47,14 +47,7 @@ function setStatus(text, timeout) {
     , timeout);
 }
 // Restores data
-function restore_options(arg) {
-    //retrieve data from storage
-    if (localStorage["hotkeys"]) {
-        var hotkeys = JSON.parse(localStorage["hotkeys"]);
-    }
-    else {
-        arg = "defaults";
-    }
+function restore_options() {
     if (localStorage["blocklist"]) {
         document.getElementById("blocklist").value = localStorage["blocklist"];
     }
@@ -63,15 +56,8 @@ function restore_options(arg) {
         var node = node_list[i];
         if (node.getAttribute('type') == 'text') {
             var className = node.getAttribute('class');
-            if (arg != "defaults") {
-                //this assumes that both values are either filled, or undefined.
-                node.value = hotkeys[className].value;
-                document.getElementById(className + "Enabled").checked = hotkeys[className].enabled;
-            }
-            else {
-                node.value = defaultHotkeys[className];
-                document.getElementById(className + "Enabled").checked = true;
-            }
+			node.value = defaultHotkeys[className];
+			document.getElementById(className + "Enabled").checked = true;
         }
     }
     //refreshes all checkboxes

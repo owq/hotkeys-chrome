@@ -55,3 +55,7 @@ $(function () {
     $(".actions2").buttonset();
 }
 );
+
+//Add listeners restore_options(&#39;defaults&#39;)
+document.getElementById("saveButton").addEventListener('click', save_options);
+document.getElementById("defaults").addEventListener('click', restore_options);
