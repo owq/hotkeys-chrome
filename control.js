@@ -263,6 +263,7 @@
 
 	chrome.storage.sync.get(['hotkeys', 'blocklist'], function (result) {
 		if(!result['hotkeys']) {
+			console.log("No data found. Create default hotkeys.");
 			chrome.storage.sync.set({'hotkeys': makeDefaultHotkeys()}, function() {});
 			return;
 		}

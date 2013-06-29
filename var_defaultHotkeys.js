@@ -11,5 +11,5 @@ var defaultHotkeys = {
 	"stopLoading" : "X",
 	"newTab" : "F",
 	"closeTab" : "C",
-	"undoCloseTab" : "Shift+C",
+	"undoCloseTab" : "Shift+C"
 };

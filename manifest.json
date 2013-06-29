@@ -15,7 +15,7 @@
 	},
 	"options_page" : "options.html",
 	"content_scripts" : [{
-			"js" : ["shortcut.js", "control.js"],
+			"js" : ["var_defaultHotkeys.js", "shortcut.js", "control.js"],
 			"matches" : ["<all_urls>"],
 			"all_frames" : true
 		}
