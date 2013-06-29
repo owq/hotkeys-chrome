@@ -1,3 +1,5 @@
+var blockListSeparator = ",";
+
 // Saves options to localStorage.
 function save_options() {
     //hotkeys data structure
@@ -26,17 +28,21 @@ function save_options() {
             hotkeys[className].enabled = document.getElementById(className + "Enabled").checked;
         }
     }
+	
     //save data
-    localStorage["hotkeys"] = JSON.stringify(hotkeys);
-    localStorage["blocklist"] = document.getElementById("blocklist").value;
-    //send new data over to background.html
-    var port = chrome.extension.connect();
-    port.postMessage( {
-        action : "reloadSettings", data : hotkeys
-    }
-    );
-    // Update status to let user know options were saved.
-    setStatus("Options Saved.", 1500);
+	var blockListArray = document.getElementById("blocklist").value.split(blockListSeparator);
+	
+	chrome.storage.sync.set({'hotkeys': hotkeys, 'blocklist': blockListArray}, function() {
+		//send new data over to background.html
+		var port = chrome.extension.connect();
+		port.postMessage( {
+			action : "reloadSettings", data : hotkeys
+		}
+		);
+		// Update status to let user know options were saved.
+		setStatus("Options Saved.", 1500);
+	});
+
 }
 function setStatus(text, timeout) {
     var statuses = $(".status");
@@ -46,32 +52,36 @@ function setStatus(text, timeout) {
 }
 // Restores data
 function restore_options(useDefaults) {
-	useDefaults = useDefaults || !localStorage["hotkeys"];
-	if (!useDefaults) {
-		var hotkeys = JSON.parse(localStorage["hotkeys"]);
-	}
-    if (localStorage["blocklist"]) {
-        document.getElementById("blocklist").value = localStorage["blocklist"];
-    }
-    var node_list = document.getElementsByTagName('input');
-    for (var i = 0; i < node_list.length; i++) {
-        var node = node_list[i];
-        if (node.getAttribute('type') == 'text') {
-            var className = node.getAttribute('class');
-			if(useDefaults) {
-				node.value = defaultHotkeys[className];
-				document.getElementById(className + "Enabled").checked = true;
-			} else {
-				node.value = hotkeys[className].value;
-				document.getElementById(className + "Enabled").checked = hotkeys[className].enabled;
+	chrome.storage.sync.get(['hotkeys', 'blocklist'], function(result) {
+		useDefaults = useDefaults || !result["hotkeys"];
+		if (!useDefaults) {
+			var hotkeys = result["hotkeys"];
+		}
+		
+		if (result["blocklist"]) {
+			document.getElementById("blocklist").value = result["blocklist"].join(blockListSeparator);
+		}
+		
+		var node_list = document.getElementsByTagName('input');
+		for (var i = 0; i < node_list.length; i++) {
+			var node = node_list[i];
+			if (node.getAttribute('type') == 'text') {
+				var className = node.getAttribute('class');
+				if(useDefaults) {
+					node.value = defaultHotkeys[className];
+					document.getElementById(className + "Enabled").checked = true;
+				} else {
+					node.value = hotkeys[className].value;
+					document.getElementById(className + "Enabled").checked = hotkeys[className].enabled;
+				}
 			}
-        }
-    }
-    //refreshes all checkboxes
-    $(function () {
-        $("input:checkbox").button("refresh");
-    }
-    );
+		}
+		//refreshes all checkboxes
+		$(function () {
+			$("input:checkbox").button("refresh");
+		}
+		);
+	});
 }
 
 //add event listener

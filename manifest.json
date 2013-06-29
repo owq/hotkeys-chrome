@@ -19,6 +19,7 @@
 		"all_frames": true
 	} ],
 	"permissions": [
+	"storage",
 	"tabs"
 	],
 	"manifest_version": 2

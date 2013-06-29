@@ -4,19 +4,6 @@
   script modified by owq
   ***********************/
 
-  var blocklist;
-  if(localStorage["blocklist"]) {
-	blocklist = localStorage["blocklist"];
-  } else {
-	blocklist = [];
-  }
-    
-  for (var i = 0; i < blocklist.length; i++) {
-    if ( blocklist[i].test(location.href) ) {
-      return;
-    }
-  }
-
   var interval = 20;
   var vertical_moment = 250;
   var horizontal_moment = 100;
@@ -149,7 +136,30 @@
 	hotkey.enabled ? shortcut.remove(hotkey.value) : doNothing();
   }
   
-  function initHotkeys(hotkeys) {
+  function initHotkeys(hotkeys, blocklist) {
+	if(blocklist) {
+		for (var i = 0; i < blocklist.length; i++) {
+			if ( location.href.indexOf(blocklist[i]) >= 0 ) {
+				console.log("Hotkeys blocked.");
+				return;
+			}
+		}
+	}
+	
+	if(!hotkeys) {
+		//create new structure using defaults
+		function hotkey() {
+			this.value = "";
+			this.enabled = false;
+		}
+		hotkeys =  new Object();
+		for (var i in defaultHotkeys) {
+			hotkeys[i] =  new hotkey();
+			hotkeys[i].value = defaultHotkeys[i];
+			hotkeys[i].enabled = true;
+		}
+	}
+	
 	addHotkey(hotkeys["scrollUp"], scrollUp);
 	addHotkey(hotkeys["scrollDown"], scrollDown);
 	addHotkey(hotkeys["previousTab"], previousTab);
@@ -187,12 +197,14 @@
   //receive data
   //@pre assumes data is correct
   function startHotkeys() {
-	  chrome.extension.sendRequest({data: "hotkeys"}, function(response) {
-		initHotkeys(response.data);
-	  });
+	  // chrome.extension.sendRequest({data: "hotkeys"}, function(response) {
+		// initHotkeys(response.data);
+	  // });
+	  
   }
   startHotkeys();
   
+  //TODO deal with new structure
   chrome.extension.onConnect.addListener(function(port) {
 	  //console.assert(port.name == "knockknock");
 	  port.onMessage.addListener(function(msg) {
@@ -205,6 +217,10 @@
 	      hotkeysEnabled ? removeHotkeys(msg.data) : startHotkeys(msg.data);
 	    }
 	  });
+  });
+  
+  chrome.storage.sync.get(['hotkeys', 'blocklist'], function(result) {
+	initHotkeys(result['hotkeys'], result['blocklist']);
   });
   
 //end

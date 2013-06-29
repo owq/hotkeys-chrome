@@ -1,27 +1,5 @@
-//get data from storage
-var hotkeys;
-if (typeof localStorage["hotkeys"] != "undefined") {
-    hotkeys = JSON.parse(localStorage["hotkeys"]);
-}
-else {
-    //create new structure using defaults
-    function hotkey() {
-        this.value = "";
-        this.enabled = false;
-    }
-    var hotkeys =  new Object();
-    for (var i in defaultHotkeys) {
-        hotkeys[i] =  new hotkey();
-        hotkeys[i].value = defaultHotkeys[i];
-        hotkeys[i].enabled = true;
-    }
-}
 chrome.extension.onRequest.addListener(function (request, sender, sendResponse) {
-    if (request.data == "hotkeys")sendResponse( {
-        data : hotkeys
-    }
-    );
-    else if (request.data == "showPA") {
+    if (request.data == "showPA") {
         chrome.pageAction.show(sender.tab.id);
         chrome.pageAction.setIcon( {
             tabId : sender.tab.id, path : "icon-19.png"
